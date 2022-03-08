@@ -1,4 +1,4 @@
-# scanservjs
+# scanservjs (armv6 build added)
 
 [![Build Status](https://img.shields.io/github/workflow/status/sbs20/scanservjs/NodeCI?style=for-the-badge)](https://github.com/sbs20/scanservjs/actions)
 [![Code QL Status](https://img.shields.io/github/workflow/status/sbs20/scanservjs/CodeQL?label=CodeQL&style=for-the-badge)](https://github.com/sbs20/scanservjs/actions)
@@ -144,3 +144,32 @@ and it's been a labour of love ever since.
 ## More about SANE
 
  * http://www.sane-project.org/
+
+## FAQ for armv6 / Raspberry1
+
+You can find the build image on [docker hub](https://hub.docker.com/r/wollsi/scanservjs).
+
+For Arch linux on RaspberryPi 1 you need some additional settings to make it work.
+
+First of all the base image changed from ```node:16-bullseye-slim``` to ```node:16-alpine``` as this is the only base image that supports both armv6 and node16.
+Therefore some changes in the image where necessary to make it work:
+
+- To make the package as slim as possible I removed airscan support
+- The change added newer imagemagick 7
+
+> :warning: **One major change in alpine: package ```sane``` is not by default installed with any backends!**
+
+You have to install any backends needed by hand
+
+> apk update && apk add sane-backend-X
+(where X stands for the needed backend)
+
+(see [pkgs.org](https://pkgs.org/search/?q=sane-backend) for all available backends)
+
+### With --priviliged, docker run throws error
+
+The kernel does not support memory limit capabilities or the cgroup is not mounted.
+
+> Add ```cgroup_enable=memory cgroup_memory=1``` at the end of the ```/boot/cmdline.txt``` and reboot.
+
+See this [stackoverflow entry](https://stackoverflow.com/questions/70873029/docker-after-add-privileged-docker-return-error) for more details.
